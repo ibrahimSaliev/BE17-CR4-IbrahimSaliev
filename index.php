@@ -1,113 +1,75 @@
+<?php 
+require_once 'actions/db_connect.php';
 
-<html>
-   <head>
-      <title>Big Library</title>
-   </head>
-   <body> 
-   <h2>Display all records:</h2>
-   <form method="get" action="displayRecords.php">
+$sql = "SELECT * FROM products";
+$result = mysqli_query($connect ,$sql);
+$tbody=''; 
+if(mysqli_num_rows($result)  > 0) {     
+    while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){         
+        $tbody .= "  <div class='col'>
+        <div class='card h-100'>
+          <img src='".$row['image']."' class='card-img-top' alt='...'>
+          <div class='card-body'>
+            <h5 class='card-title'>" .$row['title']."</h5>
+            <p class='card-text'> 
+            
+            <td> Author: ".$row['author_first_name']." ".$row['author_last_name']."</td> <hr/>
+            <td> Publisher: ".$row['publisher_name']."</td> <hr/>
+            " .$row['description']."</p>
+          </div>
+          <div class='card-footer'>
+          <td>
+          <a href='update.php?id=" .$row['id']."'><button class='btn btn-primary btn-sm' type='button'>Edit</button></a>
+          <a href='delete.php?id=" .$row['id']."'><button class='btn btn-danger btn-sm' type='button'>Delete</button></a>
+          <a href='details.php?id=" .$row['id']."'><button class='btn btn-warning btn-sm' type='button'>Details</button></a>
+          </td>
+          </div>
+        </div>
+      </div>";
+    };
+} else {
+    $tbody =  "<tr><td colspan='5'><center>No Data Available </center></td></tr>";
+}
 
-    <!-- Submit button -->
-    <div>
-        <button id='submit' type='submit'>
-            Get!
-        </button>
-    </div>
-   </form>
-   <br>
-      <h2>Insert a record into database: </h2>
-      <form method = "post" action="insertRecord.php">
-         <table width = "600" cellspacing = "1" cellpadding = "2">
-            <tr>
-               <td width = "250">ISBN Code:</td>
-               <td><input name = "isbn_code" type = "text" id = "isbn_code"></td>
-            </tr>         
-            <tr>
-               <td width = "250">Title</td>
-               <td><input name = "title" type = "text" id = "title"></td>
-            </tr>
-            <tr>
-               <td width = "250">Type</td>
-               <td><input name = "type" type = "text" id = "type"></td>
-            </tr>
-            <tr>
-               <td width = "250">Description</td>
-               <td><input name = "desc" type = "text" id = "desc"></td>
-            </tr>
-            <tr>
-               <td width = "250">Publisher</td>
-               <td><input name = "pub" type = "text" id = "pub"></td>
-            </tr>              
-            <tr>
-               <td width = "250"> </td>
-               <td></td>
-            </tr>         
-            <tr>
-               <td width = "250"> </td>
-               <td><input name = "insert" type = "submit" id = "insert"  value = "Insert Record"></td>
-            </tr>
-         </table>
-      </form>
-      <br>
-      <br>
-      <h2>Delete a record by Title: </h2>
-      <form method = "post" action="deleteRecord.php">
-         <table width = "600" cellspacing = "1" cellpadding = "2">
-            <tr>
-               <td width = "250">Title:</td>
-               <td><input name = "title" type = "text" id = "title"></td>
-            </tr>                     
-            <tr>
-               <td width = "250"> </td>
-               <td></td>
-            </tr>         
-            <tr>
-               <td width = "250"> </td>
-               <td><input name = "delete" type = "submit" id = "delete"  value = "Delete Record"></td>
-            </tr>
-         </table>
-      </form>
-      <br>
-      <br>
-      <h2>Update the record description: </h2>
-      <form method = "post" action="updateRecord.php">
-         <table width = "600" cellspacing = "1" cellpadding = "2">
-            <tr>
-               <td width = "500">Description:</td>
-               <td><input name = "short_desc" type = "text" id = "short_desc"></td>
-            </tr>         
-            <tr>
-               <td width = "250">ISBN Code:</td>
-               <td><input name = "isbn_code" type = "number" id = "isbn_code"></td>
-            </tr>              
-            <tr>
-               <td width = "250"> </td>
-               <td></td>
-            </tr>         
-            <tr>
-               <td width = "250"> </td>
-               <td><input name = "update" type = "submit" id = "update"  value = "Update Record"></td>
-            </tr>
-         </table>
-      </form>
-      <br>
-      <br>
-      <h2>Get all records with the specified publisher: </h2>
-      <form method = "post" action="publisher.php">
-         <table width = "600" cellspacing = "1" cellpadding = "2">
-            <tr>
-               <td width = "250">Publisher:</td>
-               <td><input name = "publisher" type = "text" id = "publisher"></td>
-            </tr>                    
-            <tr>
-               <td width = "250"> </td>
-               <td></td>
-            </tr>         
-            <tr>
-               <td width = "250"> </td>
-               <td><input name = "publisher" type = "submit" id = "publisher"  value = "Get Records"></td>
-            </tr>
-         </table>
-      </form>
-   </body>
+mysqli_close($connect);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Library</title>
+        <?php require_once 'components/boot.php'?>
+        <style type="text/css">
+            .manageProduct {           
+                margin: auto;
+            }
+            .img-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            td {          
+                text-align: left;
+                vertical-align: middle;
+            }
+            tr {
+                text-align: center;
+            }
+        </style>
+
+<nav class="navbar bg-light">
+  <form class="container-fluid justify-content-start">
+    
+    <a href= "create.php"><button class="btn btn-outline-success me-2"type="button" >Add product</button></a>
+  </form>
+</nav>
+    </head>
+    <body>       
+            
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+       
+        <?= $tbody;?>
+        </div>
+    </body>
 </html>
